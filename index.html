@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300&display=swap');
+
+    body {
+        font-family: 'Merriweather', serif;
+        /* background-color: #303c46; */
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+
+        background: linear-gradient(210deg, #6c718e,#212125);
+    }
+
+    .container {
+        font-family: system-ui;
+        color: white;
+        /* background-color: #d79292; */
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 5px 5px 5px rgb(14 14 14);
+        text-align: center;
+        background: linear-gradient(to bottom, #363b5a, black);
+        transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    }
+
+
+    .container:hover {
+        transform-origin: 0;
+        transform: translate(-10px, -10px);
+        box-shadow: 13.8px 20px 10px rgb(14 14 14);
+    }
+
+    #cityInput {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+    }
+
+    #searchButton {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .weather {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .together {
+        display: flex;
+        align-items: center;
+        flex-direction: row-reverse;
+        justify-content: center;
+    }
+
+    .id {
+        font-weight: bold;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    }
+
+    #temp,
+    #weather-main,
+    #humidity,
+    #temp-max,
+    #temp-min {
+        font-family:'Times New Roman', Times, serif;
+        font-size: 1em;
+    margin-top: 10px;
+    }
+
+    .fade-in-text {
+        opacity: 0;
+        animation: fadeIn 2s forwards;
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+
+        /* 50% { */
+            /* opacity: 0.5;
+        } */
+
+        100% {
+            opacity: 1;
+        }
+    }
+</style>
+
+<body>
+    <div class="container ">
+        <input id="cityInput" type="text" placeholder="Enter City name">
+        <button id="searchButton">Search</button>
+
+        <div class="weather"></div><br>
+        <span id="icon"></span>
+        <div id="temp"></div><br>
+        <div id="weather-main"></div><br>
+
+        <div id="humidity"></div><br>
+        <div id="temp-max"></div><br>
+        <div id="temp-min"></div><br>
+        <div class="id"></div>
+    </div>
+
+    <script>
+        let searchbtn = document.getElementById("searchButton")
+        searchbtn.addEventListener('click', () => {
+            const city = document.getElementById("cityInput").value
+
+
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=your_api_key`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    let icon = data.weather[0].icon
+                    console.log(icon)
+
+                    var iconElement = document.getElementById("icon");
+                    iconElement.innerHTML = `<img src=https://openweathermap.org/img/wn/${icon}@2x.png alt=Weather Icon>`
+
+                    const temperature = data.main.temp - 273.15;
+
+
+                    const roundedTemperature = temperature.toFixed(2);
+
+
+                    const temperatureElement = document.getElementById("temp");
+                    temperatureElement.innerHTML = `Temperature: ${roundedTemperature} &#8451;`;
+                    temperatureElement.classList.add("fade-in-text");
+
+
+                    let weatherelement = document.getElementsByClassName("weather")[0];
+                    weatherelement.innerHTML = `The weather for  ${city} is as follow : `;
+                    weatherelement.classList.add("fade-in-text");
+
+                    let mainweather = document.getElementById("weather-main");
+                    mainweather.innerHTML = data.weather[0].main;
+                    mainweather.classList.add("fade-in-text");
+
+                    let humidity = document.getElementById("humidity");
+                    humidity.innerHTML = "Humidity :  " + data.main.humidity + "%";
+                    humidity.classList.add("fade-in-text");
+
+                    let tempmax = document.getElementById("temp-max");
+                    tempmax.innerHTML = "Maximum : " + (data.main.temp_max - 273.15).toFixed(2) + " &#8451";
+                    tempmax.classList.add("fade-in-text");
+
+                    let tempmin = document.getElementById("temp-min");
+                    tempmin.innerHTML = "Minimum : " + (data.main.temp_min - 273.15).toFixed(2) + " &#8451";
+                    tempmin.classList.add("fade-in-text");
+
+                    let id = document.getElementsByClassName("id")[0];
+                    id.innerHTML = `The city id for ${city} is : ` + data.id;
+                    id.classList.add("fade-in-text");
+
+
+
+                })
+                .catch(error => {
+                    console.error("Error fetching weather data:", error);
+                });
+        })
+    </script>
+</body>
+
+</html>
